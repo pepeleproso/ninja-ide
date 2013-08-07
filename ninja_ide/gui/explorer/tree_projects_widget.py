@@ -52,6 +52,7 @@ from ninja_ide.core.file_handling.filesystem_notifications.base_watcher import (
 from ninja_ide.tools import ui_tools
 from ninja_ide.gui.ide import IDE
 from ninja_ide.gui.dialogs import project_properties_widget
+from ninja_ide.gui.dialogs import AddToProject
 from ninja_ide.tools.completion import completion_daemon
 
 
@@ -557,7 +558,7 @@ class TreeProjectsWidget(QTreeWidget):
         else:
             pathForFile = os.path.join(item.path, item.text(0))
         pathProjects = [p.path for p in self.get_open_projects()]
-        addToProject = ui_tools.AddToProject(pathProjects, self)
+        addToProject = AddToProject(pathProjects, self)
         addToProject.setWindowTitle(self.tr("Copy File to"))
         addToProject.exec_()
         if not addToProject.pathSelected:
@@ -585,7 +586,7 @@ class TreeProjectsWidget(QTreeWidget):
         else:
             pathForFile = os.path.join(item.path, item.text(0))
         pathProjects = [p.path for p in self.get_open_projects()]
-        addToProject = ui_tools.AddToProject(pathProjects, self)
+        addToProject = AddToProject(pathProjects, self)
         addToProject.setWindowTitle(self.tr("Copy File to"))
         addToProject.exec_()
         if not addToProject.pathSelected:

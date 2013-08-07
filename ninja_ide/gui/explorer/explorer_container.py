@@ -42,6 +42,7 @@ from ninja_ide.gui.explorer import errors_lists
 from ninja_ide.gui.explorer import migration_lists
 from ninja_ide.gui.explorer import nproject
 from ninja_ide.gui.dialogs import wizard_new_project
+from ninja_ide.gui.dialogs import AddToProject
 from ninja_ide.tools import ui_tools
 
 try:
@@ -145,7 +146,7 @@ class _ExplorerContainer(QTabWidget):
     def _add_file_to_project(self, path):
         """Add the file for 'path' in the project the user choose here."""
         pathProject = [self.get_actual_project()]
-        addToProject = ui_tools.AddToProject(pathProject, self.ide)
+        addToProject = AddToProject(pathProject, self.ide)
         addToProject.exec_()
         if not addToProject.pathSelected:
             return
