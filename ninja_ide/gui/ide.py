@@ -53,6 +53,7 @@ from ninja_ide.gui.dialogs import language_manager
 from ninja_ide.gui.dialogs import preferences
 from ninja_ide.gui.dialogs import traceback_widget
 from ninja_ide.gui.dialogs import python_detect_dialog
+from ninja_ide.gui.dialogs.profiles_loader_dialog import ProfilesLoader
 from ninja_ide.tools import ui_tools
 
 ###############################################################################
@@ -589,7 +590,7 @@ class IDE(QMainWindow):
 
     def activate_profile(self):
         """Show the Profile Manager dialog."""
-        profilesLoader = ui_tools.ProfilesLoader(self._load_profile_data,
+        profilesLoader = ProfilesLoader(self._load_profile_data,
             self.create_profile, self.save_profile,
             settings.PROFILES, self.ide)
         profilesLoader.show()
