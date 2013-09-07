@@ -60,7 +60,8 @@ from ninja_ide import resources
 from ninja_ide.core import settings
 from ninja_ide.core.file_handling import file_manager
 from ninja_ide.core.file_handling.file_manager import NinjaIOException
-from ninja_ide.tools import json_manager
+
+from ninja_ide.gui.explorer import nproject
 
 
 def load_table(table, headers, data, checkFirstColumn=True):
@@ -183,12 +184,10 @@ class ThreadProjectExplore(QThread):
 
     def _thread_open_project(self):
         try:
-            project = json_manager.read_ninja_project(self._folder_path)
-            extensions = project.get('supported-extensions',
-                settings.SUPPORTED_EXTENSIONS)
-            if extensions != settings.SUPPORTED_EXTENSIONS:
+            project = nproject.NProject(self._folder_path)
+            if project.extensions != settings.SUPPORTED_EXTENSIONS:
                 structure = file_manager.open_project_with_extensions(
-                    self._folder_path, extensions)
+                    self._folder_path, project.extensions)
             else:
                 structure = file_manager.open_project(self._folder_path)
 
