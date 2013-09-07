@@ -61,8 +61,6 @@ from ninja_ide.core import settings
 from ninja_ide.core.file_handling import file_manager
 from ninja_ide.core.file_handling.file_manager import NinjaIOException
 
-from ninja_ide.gui.ide import IDE
-
 
 def load_table(table, headers, data, checkFirstColumn=True):
     table.setHorizontalHeaderLabels(headers)
@@ -147,17 +145,17 @@ class ThreadProjectExplore(QThread):
     def __init__(self):
         super(ThreadProjectExplore, self).__init__()
         self.execute = lambda: None
-        self._folder_path = None
+        self._project = None
         self._item = None
         self._extensions = None
 
-    def open_folder(self, folder):
-        self._folder_path = folder
+    def open_folder(self, project):
+        self._project = project
         self.execute = self._thread_open_project
         self.start()
 
-    def refresh_project(self, path, item, extensions):
-        self._folder_path = path
+    def refresh_project(self, project, item, extensions):
+        self._project = project
         self._item = item
         self._extensions = extensions
         self.execute = self._thread_refresh_project
@@ -170,28 +168,26 @@ class ThreadProjectExplore(QThread):
         folder_structure = None
         if extensions != settings.SUPPORTED_EXTENSIONS:
             folder_structure = file_manager.open_project_with_extensions(
-                self._folder_path, extensions)
+                self._project.path, extensions)
         else:
             try:
-                folder_structure = file_manager.open_project(self._folder_path)
+                folder_structure = file_manager.open_project(self._project.path)
             except NinjaIOException:
                 pass  # There is not much we can do at this point
         return folder_structure
 
     def _thread_refresh_project(self):
         folder_structure = self._get_folder_structure(self._extensions)
-        if folder_structure and (folder_structure.get(self._folder_path,
+        if folder_structure and (folder_structure.get(self._project.path,
                                                 [None, None])[1] is not None):
-            folder_structure[self._folder_path][1].sort()
-            values = (self._folder_path, self._item, folder_structure)
+            folder_structure[self._project.path][1].sort()
+            values = (self._project.path, self._item, folder_structure)
             self.emit(SIGNAL("folderDataRefreshed(PyQt_PyObject)"), values)
 
     def _thread_open_project(self):
-        ninjaide = IDE.get_service('ide')
-        project = ninjaide.get_project(self._folder_path)
-        folder_structure = self._get_folder_structure(project.extensions)
+        folder_structure = self._get_folder_structure(self._project.extensions)
         self.emit(SIGNAL("folderDataAcquired(PyQt_PyObject)"),
-                (project, folder_structure))
+                (self._project, folder_structure))
 
 
 ###############################################################################

@@ -411,6 +411,8 @@ class _ExplorerContainer(QTabWidget):
                 return
             if not self.tree_projects.is_open(folderName):
                 self.tree_projects.mute_signals = True
+                ninjaide = IDE.get_service('ide')
+                project = ninjaide.get_project(folderName)
                 self.tree_projects.loading_project(folderName)
                 thread = ui_tools.ThreadProjectExplore()
                 self._thread_execution[folderName] = thread
@@ -420,7 +422,7 @@ class _ExplorerContainer(QTabWidget):
                 self.connect(thread,
                     SIGNAL("finished()"),
                     self._unmute_tree_signals_clean_threads)
-                thread.open_folder(folderName)
+                thread.open_folder(project)
             else:
                 self.tree_projects._set_current_project(folderName)
         except Exception as reason:

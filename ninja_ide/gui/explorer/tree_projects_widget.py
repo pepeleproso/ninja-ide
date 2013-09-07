@@ -370,12 +370,15 @@ class TreeProjectsWidget(QTreeWidget):
         else:
             path = file_manager.create_path(item.path, item.text(0))
 
+        ninjaide = IDE.get_service('ide')
+        project = ninjaide.get_project(path)
+
         thread = ui_tools.ThreadProjectExplore()
         self._thread_execution[path] = thread
         self.connect(thread, SIGNAL("folderDataRefreshed(PyQt_PyObject)"),
             self._callback_refresh_project)
         self.connect(thread, SIGNAL("finished()"), self._clean_threads)
-        thread.refresh_project(path, item, parentItem.extensions)
+        thread.refresh_project(project, item, parentItem.extensions)
 
     def _clean_threads(self):
         paths_to_delete = []
