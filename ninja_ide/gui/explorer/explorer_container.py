@@ -443,14 +443,14 @@ class _ExplorerContainer(QTabWidget):
             self.tree_projects.mute_signals = False
 
     def _callback_open_project(self, value):
-        path, structure = value
+        project, structure = value
         if structure is None:
-            self.tree_projects.remove_loading_icon(path)
+            self.tree_projects.remove_loading_icon(project)
             return
 
-        self.tree_projects.load_project(structure, path)
-        self.save_recent_projects(path)
-        self.emit(SIGNAL("projectOpened(QString)"), path)
+        self.tree_projects.load_project(structure, project)
+        self.save_recent_projects(project)
+        self.emit(SIGNAL("projectOpened(QString)"), project.path)
         self.emit(SIGNAL("updateLocator()"))
 
     def create_new_project(self):
@@ -497,12 +497,12 @@ class _ExplorerContainer(QTabWidget):
         if self.tree_projects:
             self.tree_projects._close_open_projects()
 
-    def save_recent_projects(self, folder):
+    def save_recent_projects(self, project):
         recent_project_list = QSettings(
             resources.SETTINGS_PATH, QSettings.IniFormat).value(
                 'recentProjects', {})
 
-        project = nproject.NProject(folder)
+        folder = project.path
         #if already exist on the list update the date time
         if folder in recent_project_list:
             properties = recent_project_list[folder]

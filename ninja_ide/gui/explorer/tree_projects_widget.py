@@ -630,20 +630,19 @@ class TreeProjectsWidget(QTreeWidget):
         item = loadingItem.add_item_to_tree(folder, self, ProjectItem, parent)
         self._loading_items[folder] = item
 
-    def remove_loading_icon(self, folder):
-        item = self._loading_items.pop(folder, None)
+    def remove_loading_icon(self, project):
+        item = self._loading_items.pop(project.path, None)
         if item is not None:
             index = self.indexOfTopLevelItem(item)
             self.takeTopLevelItem(index)
 
-    def load_project(self, folderStructure, folder):
-        if not folder:
+    def load_project(self, folderStructure, project):
+        if not project:
             return
 
-        self.remove_loading_icon(folder)
+        self.remove_loading_icon(project)
 
-        ninjaide = IDE.get_service('ide')
-        project = ninjaide.get_project(folder)
+        folder = project.path
         item = ProjectTree(self, project)
         item.isFolder = True
         item.setToolTip(0, folder)

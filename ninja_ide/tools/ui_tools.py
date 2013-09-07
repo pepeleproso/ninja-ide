@@ -61,7 +61,7 @@ from ninja_ide.core import settings
 from ninja_ide.core.file_handling import file_manager
 from ninja_ide.core.file_handling.file_manager import NinjaIOException
 
-from ninja_ide.gui.explorer import nproject
+from ninja_ide.gui.ide import IDE
 
 
 def load_table(table, headers, data, checkFirstColumn=True):
@@ -187,10 +187,11 @@ class ThreadProjectExplore(QThread):
             self.emit(SIGNAL("folderDataRefreshed(PyQt_PyObject)"), values)
 
     def _thread_open_project(self):
-        project = nproject.NProject(self._folder_path)
+        ninjaide = IDE.get_service('ide')
+        project = ninjaide.get_project(self._folder_path)
         folder_structure = self._get_folder_structure(project.extensions)
         self.emit(SIGNAL("folderDataAcquired(PyQt_PyObject)"),
-                (self._folder_path, folder_structure))
+                (project, folder_structure))
 
 
 ###############################################################################
