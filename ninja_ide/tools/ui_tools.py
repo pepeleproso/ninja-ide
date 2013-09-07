@@ -166,36 +166,31 @@ class ThreadProjectExplore(QThread):
     def run(self):
         self.execute()
 
-    def _thread_refresh_project(self):
-        if self._extensions != settings.SUPPORTED_EXTENSIONS:
-            folderStructure = file_manager.open_project_with_extensions(
-                self._folder_path, self._extensions)
+    def _get_folder_structure(self, extensions):
+        folder_structure = None
+        if extensions != settings.SUPPORTED_EXTENSIONS:
+            folder_structure = file_manager.open_project_with_extensions(
+                self._folder_path, extensions)
         else:
             try:
-                folderStructure = file_manager.open_project(self._folder_path)
+                folder_structure = file_manager.open_project(self._folder_path)
             except NinjaIOException:
                 pass  # There is not much we can do at this point
+        return folder_structure
 
-        if folderStructure and (folderStructure.get(self._folder_path,
+    def _thread_refresh_project(self):
+        folder_structure = self._get_folder_structure(self._extensions)
+        if folder_structure and (folder_structure.get(self._folder_path,
                                                 [None, None])[1] is not None):
-            folderStructure[self._folder_path][1].sort()
-            values = (self._folder_path, self._item, folderStructure)
+            folder_structure[self._folder_path][1].sort()
+            values = (self._folder_path, self._item, folder_structure)
             self.emit(SIGNAL("folderDataRefreshed(PyQt_PyObject)"), values)
 
     def _thread_open_project(self):
-        try:
-            project = nproject.NProject(self._folder_path)
-            if project.extensions != settings.SUPPORTED_EXTENSIONS:
-                structure = file_manager.open_project_with_extensions(
-                    self._folder_path, project.extensions)
-            else:
-                structure = file_manager.open_project(self._folder_path)
-
-            self.emit(SIGNAL("folderDataAcquired(PyQt_PyObject)"),
-                (self._folder_path, structure))
-        except:
-            self.emit(SIGNAL("folderDataAcquired(PyQt_PyObject)"),
-                (self._folder_path, None))
+        project = nproject.NProject(self._folder_path)
+        folder_structure = self._get_folder_structure(project.extensions)
+        self.emit(SIGNAL("folderDataAcquired(PyQt_PyObject)"),
+                (self._folder_path, folder_structure))
 
 
 ###############################################################################
